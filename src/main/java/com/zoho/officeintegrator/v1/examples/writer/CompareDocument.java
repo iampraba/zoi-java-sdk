@@ -1,19 +1,23 @@
 package com.zoho.officeintegrator.v1.examples.writer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
-import com.zoho.Initializer;
-import com.zoho.UserSignature;
-import com.zoho.api.authenticator.APIKey;
-import com.zoho.api.logger.Logger;
-import com.zoho.api.logger.Logger.Levels;
-import com.zoho.dc.ZOIEnvironment;
+import com.zoho.api.authenticator.Auth;
+import com.zoho.api.authenticator.Token;
+import com.zoho.officeintegrator.Initializer;
+import com.zoho.officeintegrator.dc.USDataCenter;
+import com.zoho.officeintegrator.logger.Logger;
+import com.zoho.officeintegrator.logger.Logger.Levels;
+import com.zoho.officeintegrator.util.APIResponse;
+import com.zoho.officeintegrator.util.StreamWrapper;
+import com.zoho.officeintegrator.v1.Authentication;
 import com.zoho.officeintegrator.v1.CompareDocumentParameters;
 import com.zoho.officeintegrator.v1.CompareDocumentResponse;
-import com.zoho.officeintegrator.v1.InvaildConfigurationException;
+import com.zoho.officeintegrator.v1.InvalidConfigurationException;
 import com.zoho.officeintegrator.v1.V1Operations;
 import com.zoho.officeintegrator.v1.WriterResponseHandler;
-import com.zoho.util.APIResponse;
 
 public class CompareDocument {
 
@@ -29,27 +33,21 @@ public class CompareDocument {
 			V1Operations sdkOperations = new V1Operations();
 			CompareDocumentParameters compareDocumentParameters = new CompareDocumentParameters();
 			
-			
-			compareDocumentParameters.setUrl1("https://demo.office-integrator.com/zdocs/MS_Word_Document_v0.docx");
-			compareDocumentParameters.setUrl2("https://demo.office-integrator.com/zdocs/MS_Word_Document_v1.docx");
+//			compareDocumentParameters.setUrl1("https://demo.office-integrator.com/zdocs/MS_Word_Document_v0.docx");
+//			compareDocumentParameters.setUrl2("https://demo.office-integrator.com/zdocs/MS_Word_Document_v1.docx");
             
 			String file1Name = "MS_Word_Document_v0.docx";
 			String file2Name = "MS_Word_Document_v1.docx";
-			/*
-			String inputFile1Path = "Absolute input file1 path"
-			File inputFile1 = new File(inputFile1Path);
-			FileInputStream file1InputStream = new FileInputStream(inputFile1);
-			StreamWrapper file1StreamWrapper = new StreamWrapper(file1InputStream);
+
+			String inputFile1Path = "/Users/praba-2086/Downloads/MS_Word_Document_v1.docx";
+			StreamWrapper file1StreamWrapper = new StreamWrapper(inputFile1Path);
 
 			compareDocumentParameters.setDocument1(file1StreamWrapper);
 			
-			String inputFile2Path = "Absolute input file2 path"
-			File inputFile2 = new File(inputFile2Path);
-			FileInputStream file2InputStream = new FileInputStream(inputFile2);
-			StreamWrapper file2StreamWrapper = new StreamWrapper(file2InputStream);
+			String inputFile2Path = "/Users/praba-2086/Downloads/MS_Word_Document_v0.docx";
+			StreamWrapper file2StreamWrapper = new StreamWrapper(inputFile2Path);
 
-			compareDocumentParameters.setDocument1(file2StreamWrapper);
-			*/
+			compareDocumentParameters.setDocument2(file2StreamWrapper);
 
 			compareDocumentParameters.setLang("en");
             compareDocumentParameters.setTitle(file1Name + " vs " + file2Name);
@@ -62,7 +60,7 @@ public class CompareDocument {
 
 				LOGGER.log(Level.INFO, "Document compare url - {0}", new Object[] { documentResponse.getCompareUrl() }); //No I18N
 			} else {
-				InvaildConfigurationException invalidConfiguration = (InvaildConfigurationException) response.getObject();
+				InvalidConfigurationException invalidConfiguration = (InvalidConfigurationException) response.getObject();
 				String errorMessage = invalidConfiguration.getMessage();
 				
 				/*Long errorCode = invalidConfiguration.getCode();
@@ -81,23 +79,24 @@ public class CompareDocument {
 		boolean status = false;
 
 		try {
-			APIKey apikey = new APIKey("2ae438cf864488657cc9754a27daa480");
-	        UserSignature user = new UserSignature("john@zylker.com"); //No I18N
-	        Logger logger = new Logger.Builder()
-						        .level(Levels.INFO)
-						        //.filePath("<file absolute path where logs would be written>") //No I18N
-						        .build();
-	        ZOIEnvironment.setProductionUrl("https://api.office-integrator.com/");
+			Logger logger = new Logger.Builder()
+			        .level(Levels.INFO)
+			        //.filePath("<file absolute path where logs would be written>") //No I18N
+			        .build();
 
+			List<Token> tokens = new ArrayList<Token>();
+			Auth auth = new Auth.Builder().addParam("apikey", "2ae438cf864488657cc9754a27daa480").authenticationSchema(new Authentication.TokenFlow()).build();
+			
+			tokens.add(auth);
+			
 			new Initializer.Builder()
-				.user(user)
-				.environment(ZOIEnvironment.PRODUCTION)
-				.token(apikey)
+				.environment(new USDataCenter.Production())
+				.tokens(tokens)
 				.logger(logger)
 				.initialize();
 			
 			status = true;
-		} catch (Exception e) {
+} catch (Exception e) {
 			LOGGER.log(Level.INFO, "Exception in creating document session url - ", e); //No I18N
 		}
 		return status;

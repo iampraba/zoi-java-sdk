@@ -1,19 +1,23 @@
 package com.zoho.officeintegrator.v1.examples.writer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
-import com.zoho.Initializer;
-import com.zoho.UserSignature;
-import com.zoho.api.authenticator.APIKey;
-import com.zoho.api.logger.Logger;
-import com.zoho.api.logger.Logger.Levels;
-import com.zoho.dc.ZOIEnvironment;
-import com.zoho.officeintegrator.v1.InvaildConfigurationException;
+import com.zoho.api.authenticator.Auth;
+import com.zoho.api.authenticator.Token;
+import com.zoho.officeintegrator.Initializer;
+import com.zoho.officeintegrator.dc.USDataCenter;
+import com.zoho.officeintegrator.logger.Logger;
+import com.zoho.officeintegrator.logger.Logger.Levels;
+import com.zoho.officeintegrator.util.APIResponse;
+import com.zoho.officeintegrator.util.StreamWrapper;
+import com.zoho.officeintegrator.v1.Authentication;
+import com.zoho.officeintegrator.v1.InvalidConfigurationException;
 import com.zoho.officeintegrator.v1.PreviewParameters;
 import com.zoho.officeintegrator.v1.PreviewResponse;
 import com.zoho.officeintegrator.v1.V1Operations;
 import com.zoho.officeintegrator.v1.WriterResponseHandler;
-import com.zoho.util.APIResponse;
 
 public class PreviewDocument {
 
@@ -29,7 +33,12 @@ public class PreviewDocument {
 			V1Operations sdkOperations = new V1Operations();
 			PreviewParameters previewParams = new PreviewParameters();
 			
-			previewParams.setUrl("https://demo.office-integrator.com/zdocs/Graphic-Design-Proposal.docx");
+//			previewParams.setUrl("https://demo.office-integrator.com/zdocs/Graphic-Design-Proposal.docx");
+			
+			String inputFilePath = "/Users/praba-2086/Downloads/894b7e4f-070b-4801-8b7c-18ec1d7d1c12.docx";
+			StreamWrapper documentStreamWrapper = new StreamWrapper(inputFilePath);
+			
+			previewParams.setDocument(documentStreamWrapper);
 			
 			APIResponse<WriterResponseHandler> response = sdkOperations.createDocumentPreview(previewParams);
 			int responseStatusCode = response.getStatusCode();
@@ -41,7 +50,7 @@ public class PreviewDocument {
 				
 				LOGGER.log(Level.INFO, "Document preview url - {0}", new Object[] { previewUrl }); //No I18N
 			} else {
-				InvaildConfigurationException invalidConfiguration = (InvaildConfigurationException) response.getObject();
+				InvalidConfigurationException invalidConfiguration = (InvalidConfigurationException) response.getObject();
 
 				String errorMessage = invalidConfiguration.getMessage();
 				
@@ -61,23 +70,24 @@ public class PreviewDocument {
 		boolean status = false;
 
 		try {
-			APIKey apikey = new APIKey("2ae438cf864488657cc9754a27daa480");
-	        UserSignature user = new UserSignature("john@zylker.com"); //No I18N
-	        Logger logger = new Logger.Builder()
-						        .level(Levels.INFO)
-						        //.filePath("<file absolute path where logs would be written>") //No I18N
-						        .build();
-	        ZOIEnvironment.setProductionUrl("https://api.office-integrator.com/");
+			Logger logger = new Logger.Builder()
+			        .level(Levels.INFO)
+			        //.filePath("<file absolute path where logs would be written>") //No I18N
+			        .build();
 
+			List<Token> tokens = new ArrayList<Token>();
+			Auth auth = new Auth.Builder().addParam("apikey", "2ae438cf864488657cc9754a27daa480").authenticationSchema(new Authentication.TokenFlow()).build();
+			
+			tokens.add(auth);
+			
 			new Initializer.Builder()
-				.user(user)
-				.environment(ZOIEnvironment.PRODUCTION)
-				.token(apikey)
+				.environment(new USDataCenter.Production())
+				.tokens(tokens)
 				.logger(logger)
 				.initialize();
 			
 			status = true;
-		} catch (Exception e) {
+} catch (Exception e) {
 			LOGGER.log(Level.INFO, "Exception in creating document session url - ", e); //No I18N
 		}
 		return status;

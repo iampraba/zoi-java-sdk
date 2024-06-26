@@ -4,23 +4,26 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.commons.io.IOUtils;
 
-import com.zoho.Initializer;
-import com.zoho.UserSignature;
-import com.zoho.api.authenticator.APIKey;
-import com.zoho.api.logger.Logger;
-import com.zoho.api.logger.Logger.Levels;
-import com.zoho.dc.ZOIEnvironment;
+import com.zoho.api.authenticator.Auth;
+import com.zoho.api.authenticator.Token;
+import com.zoho.officeintegrator.Initializer;
+import com.zoho.officeintegrator.dc.USDataCenter;
+import com.zoho.officeintegrator.logger.Logger;
+import com.zoho.officeintegrator.logger.Logger.Levels;
+import com.zoho.officeintegrator.util.APIResponse;
+import com.zoho.officeintegrator.v1.Authentication;
 import com.zoho.officeintegrator.v1.FileBodyWrapper;
-import com.zoho.officeintegrator.v1.InvaildConfigurationException;
+import com.zoho.officeintegrator.v1.InvalidConfigurationException;
 import com.zoho.officeintegrator.v1.SheetConversionOutputOptions;
 import com.zoho.officeintegrator.v1.SheetConversionParameters;
 import com.zoho.officeintegrator.v1.SheetResponseHandler;
 import com.zoho.officeintegrator.v1.V1Operations;
-import com.zoho.util.APIResponse;
 
 public class ConvertSpreadsheet {
 
@@ -38,12 +41,10 @@ public class ConvertSpreadsheet {
 			
 			//Either use url as document source or attach the document in request body use below methods
 			conversionParameters.setUrl("https://demo.office-integrator.com/samples/sheet/Contact_List.xlsx");
-			
+
 			/*
 			String inputFilePath = "Absolute input file path"
-			File inputFile = new File(inputFilePath);
-			FileInputStream fileInputStream = new FileInputStream(inputFile);
-			StreamWrapper documentStreamWrapper = new StreamWrapper(fileInputStream);
+			StreamWrapper documentStreamWrapper = new StreamWrapper(inputFilePath);
 
 			conversionParameters.setDocument(documentStreamWrapper); */
 
@@ -62,14 +63,14 @@ public class ConvertSpreadsheet {
 			
 			if ( responseStatusCode >= 200 && responseStatusCode <= 299 ) {
 				FileBodyWrapper fileBodyWrapper = (FileBodyWrapper) response.getObject();
-				String outputFilePath = System.getProperty("user.dir") + File.separator + "ConvertedSheetFile.pdf";
+				String outputFilePath = System.getProperty("user.dir") + File.separator + fileBodyWrapper.getFile().getName();
 				InputStream inputStream = fileBodyWrapper.getFile().getStream();
 				OutputStream outputStream = new FileOutputStream(new File(outputFilePath));
 				
 				IOUtils.copy(inputStream, outputStream);
 				LOGGER.log(Level.INFO, "Converted sheet saved in output file path - {0}", new Object[] { outputFilePath }); //No I18N
 			} else {
-				InvaildConfigurationException invalidConfiguration = (InvaildConfigurationException) response.getObject();
+				InvalidConfigurationException invalidConfiguration = (InvalidConfigurationException) response.getObject();
 				String errorMessage = invalidConfiguration.getMessage();
 				
 				/*Long errorCode = invalidConfiguration.getCode();
@@ -88,18 +89,19 @@ public class ConvertSpreadsheet {
 		boolean status = false;
 
 		try {
-			APIKey apikey = new APIKey("2ae438cf864488657cc9754a27daa480");
-	        UserSignature user = new UserSignature("john@zylker.com"); //No I18N
-	        Logger logger = new Logger.Builder()
-						        .level(Levels.INFO)
-						        //.filePath("<file absolute path where logs would be written>") //No I18N
-						        .build();
-	        ZOIEnvironment.setProductionUrl("https://api.office-integrator.com/");
+			Logger logger = new Logger.Builder()
+			        .level(Levels.INFO)
+			        //.filePath("<file absolute path where logs would be written>") //No I18N
+			        .build();
 
+			List<Token> tokens = new ArrayList<Token>();
+			Auth auth = new Auth.Builder().addParam("apikey", "2ae438cf864488657cc9754a27daa480").authenticationSchema(new Authentication.TokenFlow()).build();
+			
+			tokens.add(auth);
+			
 			new Initializer.Builder()
-				.user(user)
-				.environment(ZOIEnvironment.PRODUCTION)
-				.token(apikey)
+				.environment(new USDataCenter.Production())
+				.tokens(tokens)
 				.logger(logger)
 				.initialize();
 			
