@@ -34,7 +34,7 @@ Java SDK is included in this project through Maven distribution. You can include
             <dependency>
                 <groupId>com.zoho.officeintegrator</groupId>
                 <artifactId>zoi-java-sdk</artifactId>
-                <version>1.0.0</version>
+                <version>1.0.2</version>
             </dependency>
         </dependencies>
         ```
@@ -48,13 +48,13 @@ Java SDK is included in this project through Maven distribution. You can include
             maven { url "https://maven.zohodl.com" }
         }
         dependencies{
-            implementation 'com.zoho.officeintegrator:zoi-java-sdk:1.0.0'
+            implementation 'com.zoho.officeintegrator:zoi-java-sdk:1.0.2'
         }
         ```
 
 3. **Download and Bundle SDK Jar in your project**
    
-   * [zoi-java-sdk-1.0.0.jar](https://maven.zohodl.com/com/zoho/officeintegrator/zoi-java-sdk/1.0.0/zoi-java-sdk-1.0.0.jar) - Please download this jar and include along with the following dependency jars in your project to run Office Integrator java sdk on your application.
+   * [zoi-java-sdk-1.0.2.jar](https://maven.zohodl.com/com/zoho/officeintegrator/zoi-java-sdk/1.0.2/zoi-java-sdk-1.0.2.jar) - Please download this jar and include along with the following dependency jars in your project to run Office Integrator java sdk on your application.
 
         ### -  Dependency JARs
 
@@ -62,18 +62,27 @@ Java SDK is included in this project through Maven distribution. You can include
 
         * [commons-logging-1.1.3.jar](https://mvnrepository.com/artifact/commons-logging/commons-logging/1.1.3)
 
+        * [commons-fileupload-1.4.jar](https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload/1.4)
+
+        * [commons-io-1.3.2.jar](https://mvnrepository.com/artifact/commons-io/commons-io/1.3.2)
+
         * [httpclient-4.4.1.jar](https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient/4.4.1)
 
         * [httpcore-4.4.4.jar](https://mvnrepository.com/artifact/org.apache.httpcomponents/httpcore/4.4.4)
 
         * [httpmime-4.5.3.jar](https://mvnrepository.com/artifact/org.apache.httpcomponents/httpmime/4.5.3)
 
+        * [mysql-connector-java-8.0.27.jar](https://mvnrepository.com/artifact/mysql/mysql-connector-java/8.0.27)
+
         * [json-20170516.jar](https://mvnrepository.com/artifact/org.json/json/20170516)
 
-        * [mysql-connector-java-5.1.47-bin.jar](https://mvnrepository.com/artifact/mysql/mysql-connector-java/5.1.47)
+        * [opencsv-5.9.jar](https://mvnrepository.com/artifact/com.opencsv/opencsv/5.9)
 
-        * [opencsv-5.0.jar](https://mvnrepository.com/artifact/com.opencsv/opencsv/5.0)
+        * [javax.servlet-api-4.0.1.jar](https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api/4.0.1)
 
+        * [servlet-api-2.5.jar](https://mvnrepository.com/artifact/javax.servlet/servlet-api/2.5)
+
+        * [junit.jar](https://mvnrepository.com/artifact/junit/junit)
 
 ## **How to run the sample code?**
 
